@@ -11,24 +11,26 @@ import Alerts from './pages/Alerts';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import { useWebSocket, useApi } from './hooks/useApi';
+import { useQuery } from '@apollo/client';
+import { GET_ALERTS, GET_ANALYTICS_SUMMARY } from './graphql/dashboardQueries';
 
 function AppContent() {
     const ws = useWebSocket();
-    const { data: alertsData } = useApi('/alerts');
-    const { data: healthData } = useApi('/system/health', { refetchInterval: 30000 });
+    const { data: qAlerts } = useQuery(GET_ALERTS, { variables: { status: 'active' } });
+    const { data: qSummary } = useQuery(GET_ANALYTICS_SUMMARY, { pollInterval: 30000 });
 
     const [alertCounts, setAlertCounts] = useState({ critical: 0, high: 0, medium: 0 });
 
     useEffect(() => {
-        if (alertsData?.data) {
-            const active = alertsData.data.filter(a => a.status === 'active');
+        if (qAlerts?.alerts) {
+            const active = qAlerts.alerts;
             setAlertCounts({
                 critical: active.filter(a => a.severity === 'critical').length,
                 high: active.filter(a => a.severity === 'high').length,
                 medium: active.filter(a => a.severity === 'medium').length
             });
         }
-    }, [alertsData]);
+    }, [qAlerts]);
 
     // Increment counts from live alerts
     useEffect(() => {
@@ -43,7 +45,7 @@ function AppContent() {
         }
     }, [ws.alerts]);
 
-    const systemHealth = ws.systemHealth || healthData;
+    const systemHealth = ws.systemHealth || qSummary?.analyticsSummary;
 
     return (
         <>

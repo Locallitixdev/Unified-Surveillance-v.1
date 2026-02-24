@@ -1,37 +1,40 @@
 import { useState, useEffect } from 'react';
+import { useQuery } from '@apollo/client';
 import {
-    Camera, Shield, AlertTriangle, Activity, Eye, Cpu, Radio,
-    Plane, TrendingUp, ArrowUpRight, ArrowDownRight, Video, ChevronRight
+    Camera, Shield, AlertTriangle, Activity, Eye, Radio,
+    Plane, ArrowUpRight, ArrowDownRight, Video, ChevronRight
 } from 'lucide-react';
-import { useApi, formatTimeAgo, formatTime } from '../hooks/useApi';
+import { GET_CAMERAS } from '../graphql/cameraQueries';
+import { GET_EVENTS, GET_ALERTS, GET_ANALYTICS_SUMMARY } from '../graphql/dashboardQueries';
+import { formatTimeAgo } from '../hooks/useApi';
 
 export default function Dashboard({ ws }) {
-    const { data: camerasData } = useApi('/cameras');
-    const { data: summaryData } = useApi('/analytics/summary');
-    const { data: eventsData } = useApi('/events?limit=30');
-    const { data: alertsData } = useApi('/alerts?status=active');
+    const { data: qCameras } = useQuery(GET_CAMERAS);
+    const { data: qSummary } = useQuery(GET_ANALYTICS_SUMMARY);
+    const { data: qEvents } = useQuery(GET_EVENTS, { variables: { limit: 30 } });
+    const { data: qAlerts } = useQuery(GET_ALERTS, { variables: { status: 'active' } });
 
     const [liveEvents, setLiveEvents] = useState([]);
     const [gridSize, setGridSize] = useState('3x3');
 
     // Merge API events with live WS events
     useEffect(() => {
-        if (eventsData?.data) {
+        if (qEvents?.events) {
             setLiveEvents(prev => {
                 const wsEvents = ws.events || [];
-                const combined = [...wsEvents, ...eventsData.data];
+                const combined = [...wsEvents, ...qEvents.events];
                 const unique = combined.filter((e, i, arr) => arr.findIndex(x => x.id === e.id) === i);
                 return unique.slice(0, 50);
             });
         }
-    }, [eventsData, ws.events]);
+    }, [qEvents, ws.events]);
 
-    const cameras = camerasData?.data || [];
+    const cameras = qCameras?.cameras || [];
     const onlineCameras = cameras.filter(c => c.status === 'online');
     const displayCameras = onlineCameras.slice(0, gridSize === '2x2' ? 4 : gridSize === '3x3' ? 9 : 16);
 
-    const summary = summaryData || {};
-    const activeAlerts = alertsData?.data || [];
+    const summary = qSummary?.analyticsSummary || {};
+    const activeAlerts = qAlerts?.alerts || [];
 
     return (
         <div className="fade-in">

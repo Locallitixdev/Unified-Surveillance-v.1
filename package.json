@@ -11,8 +11,10 @@
     "start": "concurrently \"npm run server\" \"npm run dev\""
   },
   "dependencies": {
+    "@apollo/client": "^3.11.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
+    "graphql": "^16.8.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.575.0",
     "react": "^19.1.0",
@@ -25,6 +27,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.5.2",
+    "concurrently": "^8.2.2",
     "vite": "^7.3.1"
   }
 }

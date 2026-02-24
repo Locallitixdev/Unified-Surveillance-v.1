@@ -6,6 +6,8 @@ export default defineConfig({
     server: {
         port: 5173,
         proxy: {
+            // Proxies disabled for "Frontend-Only" Mock Mode
+            /*
             '/api': {
                 target: 'http://localhost:3001',
                 changeOrigin: true
@@ -13,7 +15,12 @@ export default defineConfig({
             '/ws': {
                 target: 'ws://localhost:3001',
                 ws: true
+            },
+            '/graphql': {
+                target: 'http://localhost:3001',
+                changeOrigin: true
             }
+            */
         }
     }
 })

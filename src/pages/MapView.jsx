@@ -1,9 +1,12 @@
-import { useEffect, useRef, useState } from 'react';
-import { useApi } from '../hooks/useApi';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import { useState } from 'react';
+import { useQuery } from '@apollo/client';
+import { GET_CAMERAS } from '../graphql/cameraQueries';
+import { GET_DRONES } from '../graphql/droneQueries';
+import { GET_SENSORS } from '../graphql/sensorQueries';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import { Camera, Plane, Radio, Filter } from 'lucide-react';
+import { Camera, Plane, Radio, Layers, Check } from 'lucide-react';
 
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -23,14 +26,27 @@ const sensorIcon = createIcon('#10b981', 8);
 const offlineIcon = createIcon('#ef4444', 8);
 
 export default function MapView() {
-    const { data: camerasData } = useApi('/cameras');
-    const { data: dronesData } = useApi('/drones');
-    const { data: sensorsData } = useApi('/sensors');
+    const { data: cData } = useQuery(GET_CAMERAS);
+    const { data: dData } = useQuery(GET_DRONES);
+    const { data: sData } = useQuery(GET_SENSORS);
     const [filters, setFilters] = useState({ cameras: true, drones: true, sensors: true });
+    const [showFilters, setShowFilters] = useState(false);
+    const [mapTheme, setMapTheme] = useState('dark');
 
-    const cameras = camerasData?.data || [];
-    const drones = dronesData?.data || [];
-    const sensors = sensorsData?.data || [];
+    const themes = {
+        dark: {
+            url: "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+            attribution: '&copy; <a href="https://carto.com/">CARTO</a>'
+        },
+        satellite: {
+            url: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }
+    };
+
+    const cameras = cData?.cameras || [];
+    const drones = dData?.drones || [];
+    const sensors = sData?.sensors || [];
 
     const center = [1.35, 103.84];
 
@@ -41,28 +57,94 @@ export default function MapView() {
                     <h1 className="page-title">Map View</h1>
                     <p className="page-subtitle">Geographic overview of all surveillance assets</p>
                 </div>
-                <div className="filter-bar">
-                    <button className={`filter-chip ${filters.cameras ? 'active' : ''}`}
-                        onClick={() => setFilters(f => ({ ...f, cameras: !f.cameras }))}>
-                        <Camera size={12} style={{ marginRight: '4px' }} /> Cameras ({cameras.length})
-                    </button>
-                    <button className={`filter-chip ${filters.drones ? 'active' : ''}`}
-                        onClick={() => setFilters(f => ({ ...f, drones: !f.drones }))}>
-                        <Plane size={12} style={{ marginRight: '4px' }} /> Drones ({drones.length})
-                    </button>
-                    <button className={`filter-chip ${filters.sensors ? 'active' : ''}`}
-                        onClick={() => setFilters(f => ({ ...f, sensors: !f.sensors }))}>
-                        <Radio size={12} style={{ marginRight: '4px' }} /> Sensors ({sensors.length})
-                    </button>
-                </div>
             </div>
 
             <div className="map-container">
+                {/* Floating Map Controls */}
+                <div className="map-filters-overlay">
+                    <button
+                        className={`map-control-btn ${showFilters ? 'active' : ''}`}
+                        onClick={() => setShowFilters(!showFilters)}
+                        title="Map Layers"
+                    >
+                        <Layers size={20} />
+                    </button>
+
+                    {showFilters && (
+                        <div className="map-filter-panel shadow-lg">
+                            <div className="map-filter-section">
+                                <span className="map-filter-label">Map Theme</span>
+                                <div className="map-theme-grid">
+                                    <button
+                                        className={`map-theme-btn ${mapTheme === 'dark' ? 'active' : ''}`}
+                                        onClick={() => setMapTheme('dark')}
+                                    >
+                                        <div style={{ width: '100%', height: '30px', background: '#0f172a', borderRadius: '4px', marginBottom: '4px' }}></div>
+                                        <span>Dark</span>
+                                    </button>
+                                    <button
+                                        className={`map-theme-btn ${mapTheme === 'satellite' ? 'active' : ''}`}
+                                        onClick={() => setMapTheme('satellite')}
+                                    >
+                                        <div style={{ width: '100%', height: '30px', background: '#454a35', borderRadius: '4px', marginBottom: '4px' }}></div>
+                                        <span>Satellite</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="map-divider"></div>
+
+                            <div className="map-filter-section">
+                                <span className="map-filter-label">Layers</span>
+                                <div
+                                    className={`map-filter-item ${filters.cameras ? 'active' : ''}`}
+                                    onClick={() => setFilters(f => ({ ...f, cameras: !f.cameras }))}
+                                >
+                                    <div className="map-filter-item-icon">
+                                        <Camera size={16} />
+                                        <span>Cameras ({cameras.length})</span>
+                                    </div>
+                                    <div className="map-filter-check">
+                                        {filters.cameras && <Check size={12} />}
+                                    </div>
+                                </div>
+
+                                <div
+                                    className={`map-filter-item ${filters.drones ? 'active' : ''}`}
+                                    onClick={() => setFilters(f => ({ ...f, drones: !f.drones }))}
+                                >
+                                    <div className="map-filter-item-icon">
+                                        <Plane size={16} />
+                                        <span>Drones ({drones.length})</span>
+                                    </div>
+                                    <div className="map-filter-check">
+                                        {filters.drones && <Check size={12} />}
+                                    </div>
+                                </div>
+
+                                <div
+                                    className={`map-filter-item ${filters.sensors ? 'active' : ''}`}
+                                    onClick={() => setFilters(f => ({ ...f, sensors: !f.sensors }))}
+                                >
+                                    <div className="map-filter-item-icon">
+                                        <Radio size={16} />
+                                        <span>Sensors ({sensors.length})</span>
+                                    </div>
+                                    <div className="map-filter-check">
+                                        {filters.sensors && <Check size={12} />}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+
                 <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }}
                     zoomControl={true}>
                     <TileLayer
-                        attribution='&copy; <a href="https://carto.com/">CARTO</a>'
-                        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+                        key={mapTheme}
+                        attribution={themes[mapTheme].attribution}
+                        url={themes[mapTheme].url}
                     />
 
                     {filters.cameras && cameras.map(cam => (

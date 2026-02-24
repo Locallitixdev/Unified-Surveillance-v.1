@@ -1,14 +1,16 @@
 import { useState } from 'react';
-import { useApi, formatTimeAgo } from '../hooks/useApi';
+import { useQuery } from '@apollo/client';
+import { GET_USERS, GET_RULES } from '../graphql/dashboardQueries';
 import { Settings as SettingsIcon, Users, Shield, BookOpen, Bell, Database, Cpu, Clock } from 'lucide-react';
+import { formatTimeAgo } from '../hooks/useApi';
 
 export default function Settings() {
-    const { data: usersData } = useApi('/users');
-    const { data: rulesData } = useApi('/rules');
+    const { data: uData } = useQuery(GET_USERS);
+    const { data: rData } = useQuery(GET_RULES);
     const [activeTab, setActiveTab] = useState('users');
 
-    const users = usersData?.data || [];
-    const rules = rulesData?.data || [];
+    const users = uData?.users || [];
+    const rules = rData?.rules || [];
 
     return (
         <div className="fade-in">

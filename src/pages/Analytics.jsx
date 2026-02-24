@@ -1,4 +1,5 @@
-import { useApi } from '../hooks/useApi';
+import { useQuery } from '@apollo/client';
+import { GET_ANALYTICS, GET_ANALYTICS_SUMMARY } from '../graphql/dashboardQueries';
 import { BarChart3, TrendingUp, PieChart, Clock, Calendar, Target, Zap, Shield } from 'lucide-react';
 import {
     AreaChart, Area, BarChart, Bar, PieChart as RePieChart, Pie, Cell,
@@ -23,13 +24,15 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 export default function Analytics() {
-    const { data: analytics } = useApi('/analytics');
-    const { data: summaryData } = useApi('/analytics/summary');
-    const summary = summaryData || {};
-    const hourly = analytics?.hourly || [];
-    const daily = analytics?.daily || [];
-    const byType = analytics?.byType || [];
-    const bySeverity = analytics?.bySeverity || [];
+    const { data: qAnalytics } = useQuery(GET_ANALYTICS);
+    const { data: qSummary } = useQuery(GET_ANALYTICS_SUMMARY);
+
+    const summary = qSummary?.analyticsSummary || {};
+    const analytics = qAnalytics?.analytics || {};
+    const hourly = analytics.hourly || [];
+    const daily = analytics.daily || [];
+    const byType = analytics.byType || [];
+    const bySeverity = analytics.bySeverity || [];
 
     return (
         <div className="fade-in">

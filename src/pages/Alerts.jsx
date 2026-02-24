@@ -1,23 +1,25 @@
 import { useState, useEffect } from 'react';
-import { useApi, formatTimeAgo } from '../hooks/useApi';
-import { Bell, Search, CheckCircle, AlertTriangle, XCircle, Shield, Clock, MapPin, Filter } from 'lucide-react';
+import { useQuery } from '@apollo/client';
+import { GET_ALERTS } from '../graphql/dashboardQueries';
+import { Bell, Search, CheckCircle, AlertTriangle, XCircle, Shield, Clock, MapPin } from 'lucide-react';
+import { formatTimeAgo } from '../hooks/useApi';
 
 export default function Alerts({ ws }) {
-    const { data } = useApi('/alerts');
+    const { data: qAlerts } = useQuery(GET_ALERTS);
     const [severityFilter, setSeverityFilter] = useState('all');
     const [statusFilter, setStatusFilter] = useState('all');
     const [search, setSearch] = useState('');
     const [liveAlerts, setLiveAlerts] = useState([]);
 
     useEffect(() => {
-        if (data?.data) {
+        if (qAlerts?.alerts) {
             setLiveAlerts(prev => {
-                const combined = [...(ws?.alerts || []), ...data.data];
+                const combined = [...(ws?.alerts || []), ...qAlerts.alerts];
                 const unique = combined.filter((a, i, arr) => arr.findIndex(x => x.id === a.id) === i);
                 return unique;
             });
         }
-    }, [data, ws?.alerts]);
+    }, [qAlerts, ws?.alerts]);
 
     const filtered = liveAlerts.filter(a => {
         if (search && !a.title.toLowerCase().includes(search.toLowerCase())) return false;

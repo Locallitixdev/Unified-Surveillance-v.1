@@ -43,6 +43,12 @@ export function useWebSocket() {
     const reconnectRef = useRef(null);
 
     const connect = useCallback(() => {
+        // MOCK_MODE: Skip live connection to avoid proxy logs during dev
+        if (true) { // Set to false when ready for live backend integration
+            console.log('[WebSocket] Mock Mode: Skipping live connection to avoid terminal errors');
+            return;
+        }
+
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsUrl = `${protocol}//${window.location.host}/ws`;
 
@@ -80,14 +86,16 @@ export function useWebSocket() {
 
             ws.onclose = () => {
                 setConnected(false);
-                reconnectRef.current = setTimeout(connect, 3000);
+                // Slow down retries to prevent log spam if backend is missing
+                reconnectRef.current = setTimeout(connect, 10000);
             };
 
             ws.onerror = () => {
+                // Silently close on error to avoid proxy spam in console
                 ws.close();
             };
         } catch (e) {
-            reconnectRef.current = setTimeout(connect, 3000);
+            reconnectRef.current = setTimeout(connect, 10000);
         }
     }, []);
 
