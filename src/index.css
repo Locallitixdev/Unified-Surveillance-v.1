@@ -767,29 +767,11 @@ a:hover {
   width: 100%;
   height: 100%;
   position: relative;
-  background: linear-gradient(135deg, #0d1117 0%, #161b22 50%, #0d1117 100%);
+  background: #000;
   overflow: hidden;
 }
 
-.video-feed::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(34, 211, 238, 0.02) 2px, rgba(34, 211, 238, 0.02) 4px);
-  animation: scanlines 8s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes scanlines {
-  0% {
-    transform: translateY(0);
-  }
-
-  100% {
-    transform: translateY(4px);
-  }
-}
+/* Scanlines removed per user request */
 
 .video-feed-noise {
   position: absolute;
@@ -804,13 +786,13 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 0.15;
 }
 
 .video-feed-scene svg {
   width: 48px;
   height: 48px;
   color: var(--accent-cyan);
+  opacity: 0.15;
 }
 
 .video-overlay-top {

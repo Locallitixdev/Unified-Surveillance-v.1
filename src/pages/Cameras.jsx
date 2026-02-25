@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { useQuery, useMutation } from '@apollo/client';
-import { Camera, Search, Filter, Wifi, WifiOff, MapPin, Plus, Edit, Trash2, X } from 'lucide-react';
+import { Camera, Search, Filter, Wifi, WifiOff, MapPin, Plus, Edit, Trash2, X, Play } from 'lucide-react';
 import { formatTimeAgo } from '../hooks/useApi';
 import { GET_CAMERAS, ADD_CAMERA, UPDATE_CAMERA, DELETE_CAMERA } from '../graphql/cameraQueries';
+import HLSPlayer from '../components/HLSPlayer';
 
 export default function Cameras() {
-    const { data, loading, error, refetch } = useQuery(GET_CAMERAS);
+    const { data, loading, error, refetch } = useQuery(GET_CAMERAS, { fetchPolicy: 'network-only' });
     const [addCamera] = useMutation(ADD_CAMERA, { onCompleted: () => { refetch(); setIsModalOpen(false); } });
     const [updateCamera] = useMutation(UPDATE_CAMERA, { onCompleted: () => { refetch(); setIsModalOpen(false); } });
     const [deleteCamera] = useMutation(DELETE_CAMERA, { onCompleted: () => refetch() });
@@ -15,6 +16,7 @@ export default function Cameras() {
     const [typeFilter, setTypeFilter] = useState('all');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCamera, setEditingCamera] = useState(null);
+    const [viewingCamera, setViewingCamera] = useState(null);
 
     const cameras = data?.cameras || [];
     const filtered = cameras.filter(c => {
@@ -117,6 +119,39 @@ export default function Cameras() {
         );
     };
 
+    const LiveStreamModal = ({ camera }) => {
+        return (
+            <div className="modal-backdrop" onClick={() => setViewingCamera(null)}>
+                <div className="modal-container" style={{ maxWidth: '800px' }} onClick={e => e.stopPropagation()}>
+                    <div className="modal-header">
+                        <h2 className="modal-title">Live View: {camera.name}</h2>
+                        <button className="btn-ghost btn-icon" onClick={() => setViewingCamera(null)}><X size={18} /></button>
+                    </div>
+                    <div style={{ padding: '20px' }}>
+                        {camera.streamUrl ? (
+                            <HLSPlayer url={camera.streamUrl} />
+                        ) : (
+                            <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', borderRadius: '8px', color: '#fff', flexDirection: 'column', gap: '10px' }}>
+                                <WifiOff size={48} opacity={0.5} />
+                                <p>No live stream available for this camera</p>
+                            </div>
+                        )}
+                        <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                            <div>
+                                <h4 style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', marginBottom: '8px' }}>Location</h4>
+                                <p>{camera.zone}</p>
+                            </div>
+                            <div>
+                                <h4 style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', marginBottom: '8px' }}>Properties</h4>
+                                <p>{camera.type} • {camera.resolution}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     return (
         <div className="fade-in">
             <div className="page-header">
@@ -193,12 +228,13 @@ export default function Cameras() {
                                         <td><span className={`status-badge ${cam.status}`}><span className="status-badge-dot" />{cam.status}</span></td>
                                         <td>
                                             <div className="table-actions">
+                                                <button className="btn-ghost btn-icon" onClick={() => setViewingCamera(cam)} title="Live View"><Play size={14} /></button>
                                                 <button className="btn-edit" onClick={() => handleOpenModal(cam)} title="Edit"><Edit size={14} /></button>
                                                 <button className="btn-delete" onClick={() => handleDelete(cam.id)} title="Delete"><Trash2 size={14} /></button>
                                             </div>
                                         </td>
                                     </tr>
-                                ))
+                                )).reverse()
                             )}
                         </tbody>
                     </table>
@@ -206,6 +242,7 @@ export default function Cameras() {
             </div>
 
             {isModalOpen && <CameraModal />}
+            {viewingCamera && <LiveStreamModal camera={viewingCamera} />}
         </div>
     );
 }

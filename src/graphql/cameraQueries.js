@@ -12,6 +12,7 @@ export const GET_CAMERAS = gql`
       industry
       status
       coordinates { lat lng }
+      streamUrl
       lastDetection
     }
   }

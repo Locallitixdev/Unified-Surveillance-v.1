@@ -7,10 +7,11 @@ import {
 import { GET_CAMERAS } from '../graphql/cameraQueries';
 import { GET_EVENTS, GET_ALERTS, GET_ANALYTICS_SUMMARY } from '../graphql/dashboardQueries';
 import { formatTimeAgo } from '../hooks/useApi';
+import HLSPlayer from '../components/HLSPlayer';
 
 export default function Dashboard({ ws }) {
-    const { data: qCameras } = useQuery(GET_CAMERAS);
-    const { data: qSummary } = useQuery(GET_ANALYTICS_SUMMARY);
+    const { data: qCameras } = useQuery(GET_CAMERAS, { fetchPolicy: 'network-only' });
+    const { data: qSummary } = useQuery(GET_ANALYTICS_SUMMARY, { fetchPolicy: 'network-only' });
     const { data: qEvents } = useQuery(GET_EVENTS, { variables: { limit: 30 } });
     const { data: qAlerts } = useQuery(GET_ALERTS, { variables: { status: 'active' } });
 
@@ -194,17 +195,18 @@ function VideoTile({ camera, index }) {
     return (
         <div className="video-tile">
             <div className="video-feed">
-                <div className="video-feed-noise" />
-                <div className="video-feed-scene">
-                    <Camera size={48} />
-                </div>
-
-                {/* Simulated AI detection boxes */}
-                {!isOffline && hasDetection && (
-                    <div className="video-detection-box" style={{ left: `${boxLeft}%`, top: `${boxTop}%`, width: '22%', height: '35%' }}>
-                        <span className="video-detection-label">{detType} 0.{92 + (index % 7)}</span>
-                    </div>
+                {camera.streamUrl && !isOffline ? (
+                    <HLSPlayer url={camera.streamUrl} className="video-feed-scene" autoPlay={true} />
+                ) : (
+                    <>
+                        {/* Noise effect removed */}
+                        <div className="video-feed-scene">
+                            <Camera size={48} />
+                        </div>
+                    </>
                 )}
+
+                {/* Simulated AI detection boxes removed as per user request */}
 
                 {isOffline && (
                     <div className="video-offline-overlay">
@@ -213,24 +215,13 @@ function VideoTile({ camera, index }) {
                     </div>
                 )}
 
-                <div className="video-overlay-top">
-                    <span className="video-cam-name">{camera.name}</span>
-                    {camera.recording && !isOffline && (
-                        <span className="video-rec-indicator">
-                            <span className="video-rec-dot" />
-                            REC
-                        </span>
-                    )}
-                </div>
+                {/* Camera name overlay removed */}
 
                 <div className="video-overlay-bottom">
                     <span className="video-timestamp">
                         {timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false })}
                     </span>
                     <div style={{ display: 'flex', gap: '4px' }}>
-                        {!isOffline && hasDetection && (
-                            <span className="video-ai-badge detection">AI</span>
-                        )}
                         <span className="video-ai-badge detection">{camera.resolution}</span>
                     </div>
                 </div>

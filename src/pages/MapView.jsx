@@ -7,6 +7,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Camera, Plane, Radio, Layers, Check } from 'lucide-react';
+import HLSPlayer from '../components/HLSPlayer';
 
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -26,7 +27,7 @@ const sensorIcon = createIcon('#10b981', 8);
 const offlineIcon = createIcon('#ef4444', 8);
 
 export default function MapView() {
-    const { data: cData } = useQuery(GET_CAMERAS);
+    const { data: cData } = useQuery(GET_CAMERAS, { fetchPolicy: 'network-only' });
     const { data: dData } = useQuery(GET_DRONES);
     const { data: sData } = useQuery(GET_SENSORS);
     const [filters, setFilters] = useState({ cameras: true, drones: true, sensors: true });
@@ -47,8 +48,7 @@ export default function MapView() {
     const cameras = cData?.cameras || [];
     const drones = dData?.drones || [];
     const sensors = sData?.sensors || [];
-
-    const center = [1.35, 103.84];
+    const center = [-6.2383, 106.9756];
 
     return (
         <div className="fade-in">
@@ -150,8 +150,13 @@ export default function MapView() {
                     {filters.cameras && cameras.map(cam => (
                         <Marker key={cam.id} position={[cam.coordinates.lat, cam.coordinates.lng]}
                             icon={cam.status === 'online' ? cameraIcon : offlineIcon}>
-                            <Popup>
-                                <div style={{ color: '#0a0e1a', fontSize: '13px', minWidth: '180px' }}>
+                            <Popup maxWidth={300}>
+                                <div style={{ color: '#0a0e1a', fontSize: '13px', minWidth: cam.streamUrl ? '260px' : '180px' }}>
+                                    {cam.streamUrl && (
+                                        <div style={{ marginBottom: '8px', borderRadius: '4px', overflow: 'hidden' }}>
+                                            <HLSPlayer url={cam.streamUrl} autoPlay={true} />
+                                        </div>
+                                    )}
                                     <strong>{cam.name}</strong><br />
                                     <span style={{ fontSize: '11px', color: '#666' }}>
                                         {cam.id} • {cam.type} • {cam.protocol}<br />

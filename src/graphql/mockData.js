@@ -12,9 +12,9 @@ const zonesArr = {
 };
 
 const centers = {
-    oil_gas: { lat: 1.35, lng: 103.82 },
-    warehouse: { lat: 1.34, lng: 103.84 },
-    smart_city: { lat: 1.36, lng: 103.85 }
+    oil_gas: { lat: -6.220, lng: 106.980 },
+    warehouse: { lat: -6.230, lng: 106.990 },
+    smart_city: { lat: -6.238, lng: 106.975 }
 };
 
 const jitter = (center, range = 0.02) => ({
@@ -33,14 +33,26 @@ export function generateCameras(count = 64) {
         const coords = jitter(centers[ind]);
         return {
             id: `CAM-${String(i + 1).padStart(4, '0')}`,
-            name: `${pick(zonesArr[ind])} Cam ${i + 1}`,
+            name: i === 0 ? 'Stasiun Bekasi' :
+                i === 1 ? 'Rawa Tembaga' :
+                    i === 2 ? 'Area CFD' :
+                        i === 3 ? 'Putaran Sumber Arta' :
+                            i === 4 ? 'DPRD' :
+                                i === 5 ? 'Eks Depan Disnaker' :
+                                    `${pick(zonesArr[ind])} Cam ${i + 1}`,
             industry: ind,
             zone: pick(zonesArr[ind]),
             type: pick(types),
             protocol: pick(protocols),
             resolution: pick(resolutions),
-            status: pick(statuses),
+            status: i < 6 ? 'online' : pick(statuses),
             coordinates: coords,
+            streamUrl: i === 0 ? 'https://eofficev2.bekasikota.go.id/backupcctv/m3/stasiun_bekasi.m3u8' :
+                i === 1 ? 'https://eofficev2.bekasikota.go.id/backupcctv/m3/rawa_tembaga.m3u8' :
+                    i === 2 ? 'https://eofficev2.bekasikota.go.id/backupcctv/m3/area_cfd.m3u8' :
+                        i === 3 ? 'https://eofficev2.bekasikota.go.id/backupcctv/m3/Putaran_sumber_Arta.m3u8' :
+                            i === 4 ? 'https://eofficev2.bekasikota.go.id/backupcctv/m3/dprd.m3u8' :
+                                i === 5 ? 'https://eofficev2.bekasikota.go.id/backupcctv/m3/ex_depan_disnaker.m3u8' : null,
             lastDetection: timeAgo(0, 3600000)
         };
     });
