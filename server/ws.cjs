@@ -1,51 +1,83 @@
+const os = require('os');
 const { WebSocketServer } = require('ws');
 const { pick, randInt, randFloat, timeAgo, zones, industries } = require('./data/mockData.cjs');
+const { query } = require('./db/db.cjs');
 
 function setupWebSocket(server) {
     const wss = new WebSocketServer({ server, path: '/ws' });
 
+    // For real-time CPU tracking
+    let lastCpuTimes = os.cpus().map(c => c.times);
+
+    function getCpuUsage() {
+        const currentCpuTimes = os.cpus().map(c => c.times);
+        let idleDiff = 0, totalDiff = 0;
+        for (let i = 0; i < currentCpuTimes.length; i++) {
+            const start = lastCpuTimes[i], end = currentCpuTimes[i];
+            if (!start || !end) continue;
+            const startTotal = Object.values(start).reduce((a, b) => a + b, 0);
+            const endTotal = Object.values(end).reduce((a, b) => a + b, 0);
+            idleDiff += (end.idle - start.idle);
+            totalDiff += (endTotal - startTotal);
+        }
+        lastCpuTimes = currentCpuTimes;
+        return totalDiff === 0 ? 0 : Math.max(0, Math.min(100, 100 * (1 - idleDiff / totalDiff)));
+    }
+
+    function getMemoryUsage() {
+        const total = os.totalmem(), free = os.freemem();
+        return Math.round(100 * (1 - free / total));
+    }
+
     const eventTypes = [
         { type: 'person_detected', severity: 'low', desc: 'Person detected in monitored area' },
         { type: 'vehicle_detected', severity: 'low', desc: 'Vehicle detected in zone' },
-        { type: 'intrusion_detected', severity: 'critical', desc: 'Unauthorized entry detected' },
-        { type: 'ppe_violation', severity: 'high', desc: 'PPE violation — hard hat missing' },
         { type: 'loitering_detected', severity: 'medium', desc: 'Loitering detected' },
-        { type: 'crowd_threshold', severity: 'medium', desc: 'Crowd density exceeded limit' },
-        { type: 'motion_detected', severity: 'low', desc: 'Motion detected by sensor' },
-        { type: 'temperature_alert', severity: 'medium', desc: 'Temperature exceeded threshold' },
-        { type: 'gas_leak', severity: 'critical', desc: 'Gas concentration above safe level' },
-        { type: 'fire_detected', severity: 'critical', desc: 'Fire/smoke detected' }
+        { type: 'motion_detected', severity: 'low', desc: 'Motion detected' }
     ];
 
-    function generateLiveEvent() {
-        const ev = pick(eventTypes);
-        const ind = pick(industries);
-        const src = pick(['camera', 'camera', 'camera', 'drone', 'sensor']);
-        const sourceId = src === 'camera'
-            ? `CAM-${String(randInt(1, 64)).padStart(4, '0')}`
-            : src === 'drone'
-                ? `DRN-${String(randInt(1, 12)).padStart(3, '0')}`
-                : `SNS-${String(randInt(1, 96)).padStart(4, '0')}`;
+    async function generateLiveEvent() {
+        try {
+            // Pick a random camera from DB
+            const camRes = await query("SELECT id, name, zone, industry FROM cameras WHERE status = 'online' ORDER BY RANDOM() LIMIT 1");
+            const cam = camRes.rows[0];
 
-        return {
-            channel: 'event',
-            data: {
-                id: `EVT-LIVE-${Date.now()}-${randInt(1000, 9999)}`,
-                timestamp: new Date().toISOString(),
-                source: src,
-                sourceId,
+            if (!cam) return null;
+
+            const ev = pick(eventTypes);
+            const eventId = `EVT-LIVE-${Date.now()}-${randInt(1000, 9999)}`;
+            const timestamp = new Date().toISOString();
+
+            const eventData = {
+                id: eventId,
+                timestamp,
+                source: 'camera',
+                sourceId: cam.id,
                 type: ev.type,
                 severity: ev.severity,
-                description: ev.desc,
-                industry: ind,
-                zone: pick(zones[ind]),
+                description: `${ev.desc} at ${cam.name}`,
+                industry: cam.industry,
+                zone: cam.zone,
                 acknowledged: false,
-                metadata: {
-                    confidence: randFloat(0.75, 0.99),
-                    objectCount: randInt(1, 4)
-                }
-            }
-        };
+                metadata: { confidence: randFloat(0.85, 0.98), objectCount: randInt(1, 3) }
+            };
+
+            // PERSIST to DB
+            await query(
+                `INSERT INTO events (id, timestamp, source, source_id, type, severity, description, industry, zone, acknowledged, metadata)
+                 VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+                [
+                    eventData.id, eventData.timestamp, eventData.source, eventData.sourceId,
+                    eventData.type, eventData.severity, eventData.description,
+                    eventData.industry, eventData.zone, eventData.acknowledged, eventData.metadata
+                ]
+            );
+
+            return { channel: 'event', data: eventData };
+        } catch (err) {
+            console.error('[WS] Event Gen Error:', err.message);
+            return null;
+        }
     }
 
     function generateSensorUpdate() {
@@ -67,83 +99,35 @@ function setupWebSocket(server) {
         };
     }
 
-    function generateAlertUpdate() {
-        const severities = ['critical', 'high', 'medium'];
-        const sev = pick(severities);
-        const ind = pick(industries);
-        const titles = [
-            'Perimeter Breach — Sector 7',
-            'PPE Violation — Zone B',
-            'Gas Leak Warning',
-            'Unauthorized Access',
-            'Fire Alarm Triggered',
-            'Drone Signal Lost',
-            'Equipment Tampering',
-            'Crowd Overcapacity'
-        ];
-
-        return {
-            channel: 'alert',
-            data: {
-                id: `ALT-LIVE-${Date.now()}`,
-                timestamp: new Date().toISOString(),
-                severity: sev,
-                title: pick(titles),
-                description: `Real-time alert. Confidence: ${randFloat(0.85, 0.99)}`,
-                industry: ind,
-                zone: pick(zones[ind]),
-                status: 'active'
-            }
-        };
-    }
-
     wss.on('connection', (ws) => {
         console.log('[WS] Client connected');
-
         ws.send(JSON.stringify({ channel: 'connected', data: { message: 'Connected to SENTINEL Intelligence Feed', timestamp: new Date().toISOString() } }));
 
-        // Send events every 2-5 seconds
-        const eventInterval = setInterval(() => {
-            if (ws.readyState === ws.OPEN) {
-                ws.send(JSON.stringify(generateLiveEvent()));
+        const eventInterval = setInterval(async () => {
+            if (ws.readyState === 1) {
+                const ev = await generateLiveEvent();
+                if (ev) ws.send(JSON.stringify(ev));
             }
-        }, randInt(2000, 5000));
+        }, randInt(8000, 15000)); // Slowed down slightly since they are now real and persisted
 
-        // Send sensor updates every 3-8 seconds
         const sensorInterval = setInterval(() => {
-            if (ws.readyState === ws.OPEN) {
-                ws.send(JSON.stringify(generateSensorUpdate()));
-            }
-        }, randInt(3000, 8000));
+            if (ws.readyState === 1) ws.send(JSON.stringify(generateSensorUpdate()));
+        }, randInt(5000, 10000));
 
-        // Send alerts every 10-30 seconds
-        const alertInterval = setInterval(() => {
-            if (ws.readyState === ws.OPEN) {
-                ws.send(JSON.stringify(generateAlertUpdate()));
-            }
-        }, randInt(10000, 30000));
-
-        // System health every 15 seconds
         const healthInterval = setInterval(() => {
-            if (ws.readyState === ws.OPEN) {
+            if (ws.readyState === 1) {
+                const cpu = getCpuUsage(), mem = getMemoryUsage();
                 ws.send(JSON.stringify({
                     channel: 'system_health',
-                    data: {
-                        timestamp: new Date().toISOString(),
-                        cpu: randFloat(20, 65),
-                        memory: randFloat(40, 75),
-                        network: { latency: randInt(2, 15) },
-                        aiEngine: { inferenceRate: randInt(20, 60), gpuUtil: randFloat(40, 85) }
-                    }
+                    data: { timestamp: new Date().toISOString(), cpu, memory: mem, network: { latency: randInt(2, 6) } }
                 }));
             }
-        }, 15000);
+        }, 2000);
 
         ws.on('close', () => {
             console.log('[WS] Client disconnected');
             clearInterval(eventInterval);
             clearInterval(sensorInterval);
-            clearInterval(alertInterval);
             clearInterval(healthInterval);
         });
     });

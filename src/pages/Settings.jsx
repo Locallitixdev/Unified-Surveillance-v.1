@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from '@apollo/client';
-import { GET_USERS, GET_RULES } from '../graphql/dashboardQueries';
+import { GET_USERS } from '../graphql/userQueries';
+import { GET_RULES } from '../graphql/ruleQueries';
 import { Settings as SettingsIcon, Users, Shield, BookOpen, Bell, Database, Cpu, Clock } from 'lucide-react';
 import { formatTimeAgo } from '../hooks/useApi';
 

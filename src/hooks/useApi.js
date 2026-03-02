@@ -43,9 +43,9 @@ export function useWebSocket() {
     const reconnectRef = useRef(null);
 
     const connect = useCallback(() => {
-        // MOCK_MODE: Skip live connection to avoid proxy logs during dev
-        if (true) { // Set to false when ready for live backend integration
-            console.log('[WebSocket] Mock Mode: Skipping live connection to avoid terminal errors');
+        const isMockMode = import.meta.env.VITE_MOCK_WS === 'true';
+        if (isMockMode) {
+            console.log('[WebSocket] Mock Mode: Skipping live connection. Set VITE_MOCK_WS=false to enable.');
             return;
         }
 
@@ -110,18 +110,6 @@ export function useWebSocket() {
     return { events, alerts, sensorUpdates, systemHealth, connected };
 }
 
-export function formatTimeAgo(timestamp) {
-    const seconds = Math.floor((Date.now() - new Date(timestamp).getTime()) / 1000);
-    if (seconds < 5) return 'just now';
-    if (seconds < 60) return `${seconds}s ago`;
-    const minutes = Math.floor(seconds / 60);
-    if (minutes < 60) return `${minutes}m ago`;
-    const hours = Math.floor(minutes / 60);
-    if (hours < 24) return `${hours}h ago`;
-    const days = Math.floor(hours / 24);
-    return `${days}d ago`;
-}
+// Re-exported for backward compatibility — prefer importing from '../utils/formatters' directly
+export { formatTimeAgo, formatTime } from '../utils/formatters';
 
-export function formatTime(timestamp) {
-    return new Date(timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-}

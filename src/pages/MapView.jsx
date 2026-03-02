@@ -11,20 +11,50 @@ import HLSPlayer from '../components/HLSPlayer';
 
 // Fix Leaflet default icon
 delete L.Icon.Default.prototype._getIconUrl;
-
-function createIcon(color, size = 12) {
+// ─── Modern Glassmorphism Map Marker ─────────────────
+function createMarker(icon, color, label, opts = {}) {
+    const { size = 42, isOffline = false } = opts;
+    const c = isOffline ? '#ef4444' : color;
     return L.divIcon({
-        className: '',
-        html: `<div style="width:${size * 2}px;height:${size * 2}px;border-radius:50%;background:${color};border:2px solid ${color};box-shadow:0 0 10px ${color}40;display:flex;align-items:center;justify-content:center;opacity:0.9;"></div>`,
-        iconSize: [size * 2, size * 2],
-        iconAnchor: [size, size]
+        className: 'map-custom-icon',
+        html: '<div class="sentinel-marker" style="--mc:' + c + ';--ms:' + size + 'px">' +
+            '<div class="sentinel-pin">' +
+            '<div class="sentinel-pin-icon">' + icon + '</div>' +
+            '<span class="sentinel-pin-label">' + label + '</span>' +
+            '<div class="sentinel-led ' + (isOffline ? 'off' : 'on') + '"></div>' +
+            '</div>' +
+            '<div class="sentinel-pointer"></div>' +
+            '</div>',
+        iconSize: [size + 20, size + 30],
+        iconAnchor: [(size + 20) / 2, size + 30],
+        popupAnchor: [0, -(size + 20)]
     });
 }
 
-const cameraIcon = createIcon('#22d3ee');
-const droneIcon = createIcon('#a78bfa', 14);
-const sensorIcon = createIcon('#10b981', 8);
-const offlineIcon = createIcon('#ef4444', 8);
+// Drone-specific marker — just the icon, floating
+function createDroneMarker(icon, color) {
+    return L.divIcon({
+        className: 'map-custom-icon',
+        html: '<div class="sentinel-drone" style="--mc:' + color + '">' +
+            '<div class="sentinel-drone-icon">' + icon + '</div>' +
+            '<div class="sentinel-drone-shadow"></div>' +
+            '</div>',
+        iconSize: [36, 44],
+        iconAnchor: [18, 22],
+        popupAnchor: [0, -18]
+    });
+}
+
+// Clean Lucide-style stroke icons
+const svgCam = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="15" height="12" rx="2"/><path d="m17 9 5-3v12l-5-3"/></svg>';
+const svgDrone = '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>';
+const svgSensor = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="2"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49"/><path d="M7.76 16.24a6 6 0 0 1 0-8.49"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/><path d="M4.93 19.07a10 10 0 0 1 0-14.14"/></svg>';
+const svgOff = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><line x1="9" y1="9" x2="15" y2="15"/><line x1="15" y1="9" x2="9" y2="15"/></svg>';
+
+const cameraIcon = createMarker(svgCam, '#f5c542', 'CAM');
+const droneIcon = createDroneMarker(svgDrone, '#a78bfa');
+const sensorIcon = createMarker(svgSensor, '#10b981', 'IOT', { size: 34 });
+const offlineIcon = createMarker(svgOff, '#ef4444', 'OFF', { size: 34, isOffline: true });
 
 export default function MapView() {
     const { data: cData } = useQuery(GET_CAMERAS, { fetchPolicy: 'network-only' });
@@ -48,7 +78,7 @@ export default function MapView() {
     const cameras = cData?.cameras || [];
     const drones = dData?.drones || [];
     const sensors = sData?.sensors || [];
-    const center = [-6.2383, 106.9756];
+    const center = [-6.5971, 106.7908];
 
     return (
         <div className="fade-in">

@@ -8,16 +8,19 @@
     "build": "vite build",
     "preview": "vite preview",
     "server": "node server/index.cjs",
-    "start": "concurrently \"npm run server\" \"npm run dev\""
+    "start": "concurrently \"npm run server\" \"npm run dev\"",
+    "db:seed": "node server/db/seed.cjs"
   },
   "dependencies": {
     "@apollo/client": "^3.11.0",
     "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
     "express": "^5.2.1",
     "graphql": "^16.8.1",
     "hls.js": "^1.6.15",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.575.0",
+    "pg": "^8.19.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-leaflet": "^5.0.0",

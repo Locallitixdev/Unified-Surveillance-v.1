@@ -1,35 +1,82 @@
 const express = require('express');
 const router = express.Router();
-const data = require('../data/mockData.cjs');
+const { query } = require('../db/db.cjs');
 
-router.get('/', (req, res) => {
-    let result = [...data.alerts];
-    if (req.query.severity) result = result.filter(a => a.severity === req.query.severity);
-    if (req.query.status) result = result.filter(a => a.status === req.query.status);
-    if (req.query.industry) result = result.filter(a => a.industry === req.query.industry);
-    res.json({ total: result.length, data: result });
+router.get('/', async (req, res) => {
+    try {
+        const conditions = [];
+        const params = [];
+        let idx = 1;
+
+        if (req.query.severity) { conditions.push(`severity = $${idx++}`); params.push(req.query.severity); }
+        if (req.query.status) { conditions.push(`status = $${idx++}`); params.push(req.query.status); }
+        if (req.query.industry) { conditions.push(`industry = $${idx++}`); params.push(req.query.industry); }
+
+        const where = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : '';
+        const result = await query(`SELECT * FROM alerts ${where} ORDER BY timestamp DESC`, params);
+        const data = result.rows.map(mapAlert);
+        res.json({ total: data.length, data });
+    } catch (err) {
+        console.error('[alerts] Error:', err.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
-router.get('/:id', (req, res) => {
-    const alert = data.alerts.find(a => a.id === req.params.id);
-    if (!alert) return res.status(404).json({ error: 'Alert not found' });
-    res.json(alert);
+router.get('/:id', async (req, res) => {
+    try {
+        const result = await query('SELECT * FROM alerts WHERE id = $1', [req.params.id]);
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Alert not found' });
+        res.json(mapAlert(result.rows[0]));
+    } catch (err) {
+        console.error('[alerts] Error:', err.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
-router.patch('/:id/acknowledge', (req, res) => {
-    const alert = data.alerts.find(a => a.id === req.params.id);
-    if (!alert) return res.status(404).json({ error: 'Alert not found' });
-    alert.status = 'acknowledged';
-    alert.acknowledgedAt = new Date().toISOString();
-    res.json(alert);
+router.patch('/:id/acknowledge', async (req, res) => {
+    try {
+        const result = await query(
+            `UPDATE alerts SET status = 'acknowledged', acknowledged_at = NOW() WHERE id = $1 RETURNING *`,
+            [req.params.id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Alert not found' });
+        res.json(mapAlert(result.rows[0]));
+    } catch (err) {
+        console.error('[alerts] Acknowledge error:', err.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
 
-router.patch('/:id/resolve', (req, res) => {
-    const alert = data.alerts.find(a => a.id === req.params.id);
-    if (!alert) return res.status(404).json({ error: 'Alert not found' });
-    alert.status = 'resolved';
-    alert.resolvedAt = new Date().toISOString();
-    res.json(alert);
+router.patch('/:id/resolve', async (req, res) => {
+    try {
+        const result = await query(
+            `UPDATE alerts SET status = 'resolved', resolved_at = NOW() WHERE id = $1 RETURNING *`,
+            [req.params.id]
+        );
+        if (result.rows.length === 0) return res.status(404).json({ error: 'Alert not found' });
+        res.json(mapAlert(result.rows[0]));
+    } catch (err) {
+        console.error('[alerts] Resolve error:', err.message);
+        res.status(500).json({ error: 'Internal server error' });
+    }
 });
+
+function mapAlert(row) {
+    return {
+        id: row.id,
+        timestamp: row.timestamp,
+        ruleId: row.rule_id,
+        severity: row.severity,
+        title: row.title,
+        description: row.description,
+        sources: row.sources,
+        industry: row.industry,
+        zone: row.zone,
+        status: row.status,
+        assignedTo: row.assigned_to,
+        acknowledgedAt: row.acknowledged_at,
+        resolvedAt: row.resolved_at
+    };
+}
 
 module.exports = router;

@@ -9,16 +9,16 @@ const timeAgo = (minMs, maxMs) => new Date(Date.now() - randInt(minMs, maxMs)).t
 // ─── Industries & Zones ─────────────────────────────────
 const industries = ['oil_gas', 'warehouse', 'smart_city'];
 const zones = {
-    oil_gas: ['Rig Platform A', 'Rig Platform B', 'Pipeline Sector 7', 'Refinery East', 'Hazmat Storage', 'Perimeter North', 'Helipad Zone', 'Tank Farm'],
-    warehouse: ['Loading Dock A', 'Loading Dock B', 'Storage Bay 1', 'Storage Bay 2', 'Assembly Line', 'Office Wing', 'Parking Lot', 'Cold Storage'],
-    smart_city: ['Downtown Core', 'Transit Hub', 'Park District', 'Highway I-90', 'Shopping Mall', 'Stadium Area', 'Residential Block 5', 'Industrial Zone']
+    oil_gas: ['Hazmat Storage', 'Perimeter North', 'Helipad Zone', 'Tank Farm'],
+    warehouse: ['Loading Dock A', 'Loading Dock B', 'Storage Bay 1', 'Storage Bay 2', 'Assembly Line', 'Cold Storage'],
+    smart_city: ['Simpang Yasmin', 'Taman Sempur', 'Tugu Kujang', 'Alun-Alun Kota', 'Simpang Bubulak', 'Simpang Pomad', 'Botani Square', 'Kebun Raya']
 };
 
 // ─── Coordinates (center points per industry) ───────────
 const centers = {
-    oil_gas: { lat: 1.35, lng: 103.82 },
-    warehouse: { lat: 1.34, lng: 103.84 },
-    smart_city: { lat: 1.36, lng: 103.85 }
+    oil_gas: { lat: -6.580, lng: 106.780 },
+    warehouse: { lat: -6.590, lng: 106.810 },
+    smart_city: { lat: -6.597, lng: 106.790 }
 };
 const jitter = (center, range = 0.02) => ({
     lat: +(center.lat + (Math.random() - 0.5) * range).toFixed(6),
@@ -28,35 +28,34 @@ const jitter = (center, range = 0.02) => ({
 // ═══════════════════════════════════════════════════════
 // CAMERAS
 // ═══════════════════════════════════════════════════════
-function generateCameras(count = 64) {
-    const types = ['PTZ', 'Fixed', 'Dome', 'Bullet', 'Thermal'];
-    const protocols = ['RTSP', 'ONVIF', 'RTMP'];
-    const resolutions = ['1080p', '4K', '720p', '4K UHD'];
-    const statuses = ['online', 'online', 'online', 'online', 'offline', 'maintenance'];
-
-    return Array.from({ length: count }, (_, i) => {
-        const ind = pick(industries);
-        const coords = jitter(centers[ind]);
-        return {
+// CAMERAS
+// ═══════════════════════════════════════════════════════
+function generateCameras() {
+    try {
+        const liveData = require('./live_cameras.json');
+        return liveData.map((live, i) => ({
             id: `CAM-${String(i + 1).padStart(4, '0')}`,
-            name: `${pick(zones[ind])} Cam ${i + 1}`,
-            industry: ind,
-            zone: pick(zones[ind]),
-            type: pick(types),
-            protocol: pick(protocols),
-            resolution: pick(resolutions),
-            status: pick(statuses),
-            coordinates: coords,
-            ip: `192.168.${randInt(1, 254)}.${randInt(1, 254)}`,
-            port: pick([554, 8554, 80]),
-            streamUrl: `rtsp://192.168.${randInt(1, 254)}.${randInt(1, 254)}:554/stream${i + 1}`,
-            lastDetection: timeAgo(0, 3600000),
-            fps: pick([15, 25, 30]),
-            recording: Math.random() > 0.1,
-            nightVision: Math.random() > 0.3,
-            createdAt: timeAgo(86400000 * 30, 86400000 * 365)
-        };
-    });
+            name: live.name,
+            industry: 'smart_city',
+            zone: live.zone || 'Bogor',
+            type: live.type || 'Fixed',
+            protocol: 'HLS',
+            resolution: '1080p',
+            status: live.status || 'online',
+            coordinates: { lat: live.lat, lng: live.lng },
+            ip: `10.20.30.${i + 1}`,
+            port: 80,
+            streamUrl: live.streamUrl,
+            lastDetection: new Date().toISOString(),
+            fps: 30,
+            recording: true,
+            nightVision: true,
+            createdAt: new Date().toISOString()
+        }));
+    } catch (err) {
+        console.warn('[mockData] Failed to load live_cameras.json, falling back to empty list.');
+        return [];
+    }
 }
 
 // ═══════════════════════════════════════════════════════

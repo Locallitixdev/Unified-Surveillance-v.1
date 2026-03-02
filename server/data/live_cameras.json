@@ -1,0 +1,461 @@
+[
+    {
+        "name": "JL.BARU DEPAN UNDERPASS",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.5608970537672535,
+        "lng": 106.80475731726231,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/807907af-8920-439d-9ae6-b67daa216818.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "JL. BARU DEPAN UNDERPASS 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.561228713390427,
+        "lng": 106.80507900880346,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/ad7725b1-5f9a-4ccb-97e2-9f5a68990865.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Yasmin",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.555814562726495,
+        "lng": 106.77896933902507,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/fa74138a-dd7e-4f10-8174-69475584073d.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Yasmin 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.556080117139408,
+        "lng": 106.77864606910465,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/c18014c9-7e81-4fc4-a799-b71fe2718e08.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Manunggal",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.586341825128753,
+        "lng": 106.7832134772562,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/fafe128b-2570-4c74-9ca1-da1286fdf59d.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Sebelum Under pass",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.561229195850232,
+        "lng": 106.80699748512312,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/9c47a00d-90ce-44de-835e-1a4d704f7901.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Sebelum under pass 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.562337224788631,
+        "lng": 106.79582066197132,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/d220d1d8-ff5f-40ee-a3f8-019deb6bd019.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Kol Ah Syam",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.597907923452616,
+        "lng": 106.81806595142818,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/244ee10c-bbb3-4f48-852a-b7bd6fbf5aa1.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Kol Ah Syam 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.596234710680129,
+        "lng": 106.81778810048924,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/f03456d3-1d6c-4156-b301-e66e85e1b52e.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Kol Ah Syam Atas",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.5971743267499345,
+        "lng": 106.81787378427153,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/83608f94-69a9-4341-a821-beb90fdee6e3.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Katulampa",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.622207195287015,
+        "lng": 106.82959757494561,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/7c1016d7-cba8-4ed0-995d-6bbd44920698.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Soematra Dirge",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.628638328670055,
+        "lng": 106.80742615925692,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/c7f1e1d4-0238-41a8-a9f2-2d4b3c5d8d60.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Gt Kayu Manis",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.528667133781148,
+        "lng": 106.76552746800157,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/9a2a170b-06b5-4401-ac60-3d0d7fdc44bf.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Depan Yogya",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.561548882236626,
+        "lng": 106.79180602337708,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/f35a34ac-7528-4582-96bb-1f5f0a226f07.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Jl Raya Tajur",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.638537065745606,
+        "lng": 106.83253332538258,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/c230942d-4764-4124-8c77-4b2d24de4b24.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Jl Raya Tajur 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.637442658967874,
+        "lng": 106.83062168919078,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/7e36d5b9-b437-4ba2-a36f-9c8905b66d55.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Depan Yogya 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.5628400298543035,
+        "lng": 106.79641571369454,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/c9fdf5ba-ae6c-477c-bec2-f1599f534950.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Jl Cibadak Toll",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.553321769121688,
+        "lng": 106.77582742234364,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/1e4f5b21-a026-4a51-928b-c3a9ce22bce4.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Jl Cibadak",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.550032038266588,
+        "lng": 106.77524820209524,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/19e925c3-f404-409e-9719-ea285acf9377.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Pahlawan",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.613802891993912,
+        "lng": 106.80335140298578,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/d8047631-e56c-4b58-9b41-e96d47a4c187.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Pahlawan Dereded",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.614402482809036,
+        "lng": 106.80349299144446,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/d3579a4b-ec79-4512-8173-d956cdf098ac.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "JL Dereded",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.6147308496547454,
+        "lng": 106.80245510435059,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/3216f8c7-d3b9-4fac-ba7d-de18ee9a8090.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Pasar Dewi Sartika",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.590679449508052,
+        "lng": 106.79250033723287,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/9ecd30db-6cff-43eb-aef2-5c846b10c799.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Dewi Sartika 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.590129616871195,
+        "lng": 106.79260864111016,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/ac6de512-c9bf-48fd-b438-953481a43a17.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Jembatan Bhayangkara",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.562142082891599,
+        "lng": 106.80817380722586,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/0316066f-7936-44ce-9acd-d2f9032d44b4.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Dadali",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.568735760791592,
+        "lng": 106.80573085221947,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/83c68a43-dce7-4eea-a86d-913ff5a2a08a.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Dadali 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.569150403616475,
+        "lng": 106.80551763505467,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/cb79f4a2-f7f2-4e56-b848-f2e9eb9edcc6.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Taman Heulang",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.569619635982543,
+        "lng": 106.8026578814967,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/8f5ed3cb-5ab6-4687-b259-a3c5c46c5fed.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Taman Sempur",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.591013838515593,
+        "lng": 106.80106723959209,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/b5af80c7-6bd1-4b1e-9fb3-f847e012cb80.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Jl Semeru 1",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.583840766464078,
+        "lng": 106.78043242289438,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/acb7a829-1c3a-4429-8b37-d53647d69d53.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "JL Semeru 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.585574288399338,
+        "lng": 106.7819299858577,
+        "streamUrl": "https://restreamer6.kotabogor.go.id/memfs/1c6642fb-f4e9-4c2c-9411-c994d7332fea.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Bubulak",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.57326605566491,
+        "lng": 106.75142169683072,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/09fc93cb-7267-407c-8809-c8b06b004b4a.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Mayor Oking",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.593343539543488,
+        "lng": 106.78996557077933,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/66a4ac45-9646-42e7-804c-5293af4ee4fc.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Pasar Mawar",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.590238316436521,
+        "lng": 106.78796273175104,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/baccd872-4c65-4832-9f33-c5b4d467e777.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Dramaga",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.575819805423358,
+        "lng": 106.73763188409042,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/51e9eed5-4b9a-4d45-bd04-8e3fc7485a67.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Pasar Mawar 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.590417311109594,
+        "lng": 106.78612055339089,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/09ca573e-e121-4689-aac7-c4ee4b1278fa.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Pasar Gunung Batu",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.594149897556674,
+        "lng": 106.77778230958603,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/a4e728ef-9bbc-4c89-a303-9d4a160cb940.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Bubulak 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.573509622131267,
+        "lng": 106.75158576160395,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/d8e16825-1d69-4eee-9bb9-1368131a56e7.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Pasar Gn Batu 2",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.5944736078222945,
+        "lng": 106.77810683588993,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/c749c699-6399-446f-9207-478be7de226d.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Sindang Barangan",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.580171508516959,
+        "lng": 106.76338900928006,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/b85b93a4-22dd-418a-ae88-8322f0bc479f.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Simpang Sindang Barangan",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.569459722466587,
+        "lng": 106.75753224388467,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/83eb5f01-df58-4cc1-8cd0-2f507be57649.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Dewi Sartika Alun Alun",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.594425831936285,
+        "lng": 106.79192548062247,
+        "streamUrl": "https://restreamer4.kotabogor.go.id/memfs/9c1f117e-11e7-4249-abb9-c75749a90761.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "CCTV Sindang Barangan",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.573370583704876,
+        "lng": 106.751740919153,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/534eb46c-159d-43c9-ae35-2f273245f257.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Putaran Bondes",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.561461276133067,
+        "lng": 106.80251261284491,
+        "streamUrl": "https://restreamer5.kotabogor.go.id/memfs/22d63eda-40bb-4fed-95c3-7c4eeef51cbf.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Jl Mawar Arah Semeru",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.590386216669526,
+        "lng": 106.78610796634719,
+        "streamUrl": "https://restreamer3.kotabogor.go.id/memfs/3b191b4b-6473-401d-9508-fe4a61be876b.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Pertigaan Mawar",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.5901818859272865,
+        "lng": 106.78614965905463,
+        "streamUrl": "https://restreamer3.kotabogor.go.id/memfs/8b39d204-4039-4352-b236-01635b3f5e7a.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Jl Juanda",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.597723743782483,
+        "lng": 106.79386436180432,
+        "streamUrl": "https://restreamer3.kotabogor.go.id/memfs/e2d12ced-bcc3-4826-b872-97fcce335e93.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Juanda Depan Balaikota",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.595170391037443,
+        "lng": 106.79426124794195,
+        "streamUrl": "https://restreamer3.kotabogor.go.id/memfs/e7d14e54-b9bd-474a-8976-dd08baec4498.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Arah Balai Kota",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.596383045096208,
+        "lng": 106.79388145917616,
+        "streamUrl": "https://restreamer3.kotabogor.go.id/memfs/519d2368-103e-4e7c-860c-35d66a7f6352.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Taman Pangrango",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.59218276638857,
+        "lng": 106.80421550322035,
+        "streamUrl": "https://restreamer.kotabogor.go.id/memfs/ce8e9840-f59d-4ae3-a82d-39e978dd0a56.m3u8",
+        "status": "online"
+    },
+    {
+        "name": "Taman Kencana",
+        "type": "Fixed",
+        "zone": "Bogor",
+        "lat": -6.589150324488795,
+        "lng": 106.80179293242257,
+        "streamUrl": "https://restreamer.kotabogor.go.id/memfs/b397dea2-8884-4c22-b6a9-f0acd0a204ea.m3u8",
+        "status": "online"
+    }
+]

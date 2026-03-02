@@ -29,15 +29,11 @@ export default function Header({ systemHealth, alertCounts, connected }) {
                         <>
                             <div className="header-status-item">
                                 <span className="label">CPU</span>
-                                <span className="value">{systemHealth.cpu?.toFixed(1) || '--'}%</span>
+                                <span className="value">{Math.round(systemHealth.cpu || 0)}%</span>
                             </div>
                             <div className="header-status-item">
                                 <span className="label">MEM</span>
-                                <span className="value">{systemHealth.memory?.toFixed(1) || '--'}%</span>
-                            </div>
-                            <div className="header-status-item">
-                                <span className="label">AI</span>
-                                <span className="value" style={{ color: '#22d3ee' }}>{systemHealth.aiEngine?.inferenceRate || '--'} fps</span>
+                                <span className="value">{Math.round(systemHealth.memory || 0)}%</span>
                             </div>
                         </>
                     )}

@@ -1,0 +1,14 @@
+node_modules
+dist
+.git
+.gitignore
+*.md
+docker-compose.yml
+Dockerfile.*
+.env
+.antigravity
+.gemini
+build
+*.log
+.vscode
+.idea

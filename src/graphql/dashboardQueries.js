@@ -72,30 +72,3 @@ export const GET_ANALYTICS = gql`
     }
   }
 `;
-
-export const GET_USERS = gql`
-  query GetUsers {
-    users {
-      id
-      username
-      fullName
-      email
-      role
-      status
-      lastLogin
-    }
-  }
-`;
-
-export const GET_RULES = gql`
-  query GetRules {
-    rules {
-      id
-      name
-      severity
-      industry
-      actions
-      enabled
-    }
-  }
-`;

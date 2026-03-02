@@ -1,22 +1,32 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client';
-import { Camera, Search, Filter, Wifi, WifiOff, MapPin, Plus, Edit, Trash2, X, Play } from 'lucide-react';
-import { formatTimeAgo } from '../hooks/useApi';
+import { Camera, Search, Wifi, WifiOff, Plus, Edit, Trash2, Play, Upload } from 'lucide-react';
+import BatchUploadModal from '../components/BatchUploadModal';
+import { formatTimeAgo } from '../utils/formatters';
 import { GET_CAMERAS, ADD_CAMERA, UPDATE_CAMERA, DELETE_CAMERA } from '../graphql/cameraQueries';
-import HLSPlayer from '../components/HLSPlayer';
+import { CameraModal, OperatorView } from '../components/CameraModals';
 
 export default function Cameras() {
+    const [searchParams] = useSearchParams();
     const { data, loading, error, refetch } = useQuery(GET_CAMERAS, { fetchPolicy: 'network-only' });
-    const [addCamera] = useMutation(ADD_CAMERA, { onCompleted: () => { refetch(); setIsModalOpen(false); } });
-    const [updateCamera] = useMutation(UPDATE_CAMERA, { onCompleted: () => { refetch(); setIsModalOpen(false); } });
-    const [deleteCamera] = useMutation(DELETE_CAMERA, { onCompleted: () => refetch() });
 
     const [search, setSearch] = useState('');
-    const [statusFilter, setStatusFilter] = useState('all');
+    const [statusFilter, setStatusFilter] = useState(searchParams.get('status') || 'all');
     const [typeFilter, setTypeFilter] = useState('all');
+
+    useEffect(() => {
+        const status = searchParams.get('status');
+        if (status) setStatusFilter(status);
+    }, [searchParams]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCamera, setEditingCamera] = useState(null);
     const [viewingCamera, setViewingCamera] = useState(null);
+    const [showBatchUpload, setShowBatchUpload] = useState(false);
+
+    const [addCamera] = useMutation(ADD_CAMERA, { onCompleted: () => { refetch(); setIsModalOpen(false); } });
+    const [updateCamera] = useMutation(UPDATE_CAMERA, { onCompleted: () => { refetch(); setIsModalOpen(false); } });
+    const [deleteCamera] = useMutation(DELETE_CAMERA, { onCompleted: () => refetch() });
 
     const cameras = data?.cameras || [];
     const filtered = cameras.filter(c => {
@@ -38,118 +48,20 @@ export default function Cameras() {
         setIsModalOpen(true);
     };
 
+    const handleCloseModal = () => setIsModalOpen(false);
+
+    const handleModalSubmit = (input, isEdit) => {
+        if (isEdit) {
+            updateCamera({ variables: { id: editingCamera.id, input } });
+        } else {
+            addCamera({ variables: { input } });
+        }
+    };
+
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this camera?')) {
             deleteCamera({ variables: { id } });
         }
-    };
-
-    const CameraModal = () => {
-        const [formData, setFormData] = useState(editingCamera || {
-            name: '',
-            type: 'Fixed',
-            protocol: 'RTSP',
-            resolution: '1920x1080',
-            zone: 'Main Entrance',
-            industry: 'security',
-            status: 'online'
-        });
-
-        const handleSubmit = (e) => {
-            e.preventDefault();
-            const input = {
-                name: formData.name,
-                type: formData.type,
-                protocol: formData.protocol,
-                resolution: formData.resolution,
-                zone: formData.zone,
-                industry: formData.industry,
-                status: formData.status
-            };
-
-            if (editingCamera) {
-                updateCamera({ variables: { id: editingCamera.id, input } });
-            } else {
-                addCamera({ variables: { input } });
-            }
-        };
-
-        return (
-            <div className="modal-backdrop" onClick={() => setIsModalOpen(false)}>
-                <div className="modal-container" onClick={e => e.stopPropagation()}>
-                    <div className="modal-header">
-                        <h2 className="modal-title">{editingCamera ? 'Edit Camera' : 'Add New Camera'}</h2>
-                        <button className="btn-ghost btn-icon" onClick={() => setIsModalOpen(false)}><X size={18} /></button>
-                    </div>
-                    <form onSubmit={handleSubmit}>
-                        <div className="form-group">
-                            <label className="form-label">Camera Name</label>
-                            <input className="form-input" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} required />
-                        </div>
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                            <div className="form-group">
-                                <label className="form-label">Type</label>
-                                <select className="form-input" value={formData.type} onChange={e => setFormData({ ...formData, type: e.target.value })}>
-                                    <option value="Fixed">Fixed</option>
-                                    <option value="PTZ">PTZ</option>
-                                    <option value="Dome">Dome</option>
-                                    <option value="Bullet">Bullet</option>
-                                </select>
-                            </div>
-                            <div className="form-group">
-                                <label className="form-label">Protocol</label>
-                                <select className="form-input" value={formData.protocol} onChange={e => setFormData({ ...formData, protocol: e.target.value })}>
-                                    <option value="RTSP">RTSP</option>
-                                    <option value="ONVIF">ONVIF</option>
-                                    <option value="HTTP">HTTP</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="form-group">
-                            <label className="form-label">Zone</label>
-                            <input className="form-input" value={formData.zone} onChange={e => setFormData({ ...formData, zone: e.target.value })} />
-                        </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" onClick={() => setIsModalOpen(false)}>Cancel</button>
-                            <button type="submit" className="btn btn-primary">{editingCamera ? 'Update Camera' : 'Add Camera'}</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        );
-    };
-
-    const LiveStreamModal = ({ camera }) => {
-        return (
-            <div className="modal-backdrop" onClick={() => setViewingCamera(null)}>
-                <div className="modal-container" style={{ maxWidth: '800px' }} onClick={e => e.stopPropagation()}>
-                    <div className="modal-header">
-                        <h2 className="modal-title">Live View: {camera.name}</h2>
-                        <button className="btn-ghost btn-icon" onClick={() => setViewingCamera(null)}><X size={18} /></button>
-                    </div>
-                    <div style={{ padding: '20px' }}>
-                        {camera.streamUrl ? (
-                            <HLSPlayer url={camera.streamUrl} />
-                        ) : (
-                            <div style={{ height: '300px', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#000', borderRadius: '8px', color: '#fff', flexDirection: 'column', gap: '10px' }}>
-                                <WifiOff size={48} opacity={0.5} />
-                                <p>No live stream available for this camera</p>
-                            </div>
-                        )}
-                        <div style={{ marginTop: '20px', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                            <div>
-                                <h4 style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', marginBottom: '8px' }}>Location</h4>
-                                <p>{camera.zone}</p>
-                            </div>
-                            <div>
-                                <h4 style={{ color: 'var(--text-secondary)', fontSize: 'var(--text-xs)', textTransform: 'uppercase', marginBottom: '8px' }}>Properties</h4>
-                                <p>{camera.type} • {camera.resolution}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
     };
 
     return (
@@ -159,9 +71,14 @@ export default function Cameras() {
                     <h1 className="page-title">Camera Management</h1>
                     <p className="page-subtitle">{cameras.length} cameras registered • {statusCounts.online} online</p>
                 </div>
-                <button className="btn btn-primary" onClick={() => handleOpenModal()}>
-                    <Plus size={16} /> Add Camera
-                </button>
+                <div className="flex-center-gap">
+                    <button className="btn btn-secondary" onClick={() => setShowBatchUpload(true)}>
+                        <Upload size={16} /> Batch Upload
+                    </button>
+                    <button className="btn btn-primary" onClick={() => handleOpenModal()}>
+                        <Plus size={16} /> Add Camera
+                    </button>
+                </div>
             </div>
 
             {/* Filter Bar */}
@@ -206,31 +123,31 @@ export default function Cameras() {
                         </thead>
                         <tbody>
                             {loading ? (
-                                <tr><td colSpan="8" style={{ textAlign: 'center', padding: '40px' }}>Loading cameras...</td></tr>
+                                <tr><td colSpan="8" className="table-empty-state">Loading cameras...</td></tr>
                             ) : error ? (
-                                <tr><td colSpan="8" style={{ textAlign: 'center', padding: '40px', color: 'var(--severity-critical)' }}>Error loading cameras: {error.message}</td></tr>
+                                <tr><td colSpan="8" className="table-empty-state table-error">Error loading cameras: {error.message}</td></tr>
                             ) : filtered.length === 0 ? (
-                                <tr><td colSpan="8" style={{ textAlign: 'center', padding: '40px' }}>No cameras found</td></tr>
+                                <tr><td colSpan="8" className="table-empty-state">No cameras found</td></tr>
                             ) : (
                                 filtered.map(cam => (
                                     <tr key={cam.id}>
                                         <td className="id-cell">{cam.id.slice(0, 8)}...</td>
                                         <td style={{ fontWeight: 500 }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div className="flex-center-gap">
                                                 <Camera size={14} style={{ color: 'var(--accent-cyan)' }} />
                                                 {cam.name}
                                             </div>
                                         </td>
                                         <td>{cam.type}</td>
-                                        <td><span style={{ fontFamily: 'var(--font-mono)', fontSize: 'var(--text-xs)' }}>{cam.protocol}</span></td>
+                                        <td><span className="mono-text">{cam.protocol}</span></td>
                                         <td>{cam.resolution}</td>
-                                        <td style={{ fontSize: 'var(--text-xs)' }}>{cam.zone}</td>
+                                        <td className="text-xs">{cam.zone}</td>
                                         <td><span className={`status-badge ${cam.status}`}><span className="status-badge-dot" />{cam.status}</span></td>
                                         <td>
                                             <div className="table-actions">
-                                                <button className="btn-ghost btn-icon" onClick={() => setViewingCamera(cam)} title="Live View"><Play size={14} /></button>
-                                                <button className="btn-edit" onClick={() => handleOpenModal(cam)} title="Edit"><Edit size={14} /></button>
-                                                <button className="btn-delete" onClick={() => handleDelete(cam.id)} title="Delete"><Trash2 size={14} /></button>
+                                                <button className="btn-icon btn-ghost" onClick={() => setViewingCamera(cam)} title="Live View"><Play size={14} /></button>
+                                                <button className="btn-icon btn-edit" onClick={() => handleOpenModal(cam)} title="Edit"><Edit size={14} /></button>
+                                                <button className="btn-icon btn-delete" onClick={() => handleDelete(cam.id)} title="Delete"><Trash2 size={14} /></button>
                                             </div>
                                         </td>
                                     </tr>
@@ -241,8 +158,26 @@ export default function Cameras() {
                 </div>
             </div>
 
-            {isModalOpen && <CameraModal />}
-            {viewingCamera && <LiveStreamModal camera={viewingCamera} />}
+            {isModalOpen && (
+                <CameraModal
+                    editingCamera={editingCamera}
+                    onClose={handleCloseModal}
+                    onSubmit={handleModalSubmit}
+                />
+            )}
+            {viewingCamera && (
+                <OperatorView
+                    camera={viewingCamera}
+                    cameras={cameras}
+                    onClose={() => setViewingCamera(null)}
+                />
+            )}
+            {showBatchUpload && (
+                <BatchUploadModal
+                    onClose={() => setShowBatchUpload(false)}
+                    onComplete={() => refetch()}
+                />
+            )}
         </div>
     );
 }
